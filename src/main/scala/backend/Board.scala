@@ -41,7 +41,7 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
   end addStage
 
   //Adding a new stage with specified ID
-  def addStageWithID(id: String) = 
+  def addStageWithID(id: String) =  
     val stage = new Stage(this, id)
     allStages = allStages.addOne(stage)
     stage
