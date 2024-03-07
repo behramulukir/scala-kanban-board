@@ -1,0 +1,8 @@
+Sprint 1:
+Legacy backend code that is partly written in Scala 2 was transferred into this project, commented in detail to avoid confusions while using old code.
+The backend code includes all the variables and fuctions for KanbanApp, Board, Stage, Card, Interaction, Checklist, Tag, and Checklist classes and related classes.
+The code is tested superficially by using REPL with simple commands.
+
+There are noticed to be possible problems with IO-handling which will be fixed after building a working GUI.
+
+First steps to build GUI is made, very simple draft is made ready by using Scene Builder.
