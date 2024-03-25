@@ -6,3 +6,14 @@ The code is tested superficially by using REPL with simple commands.
 There are noticed to be possible problems with IO-handling which will be fixed after building a working GUI.
 
 First steps to build GUI is made, very simple draft is made ready by using Scene Builder.
+
+Sprint 2:
+During this sprint, focus on was fixing previously lacked things first and then taking initial steps with GUI.
+
+Unit tests have been implemented for all the fundemental functions of pillar classes such as KanbanApp, Board, Stage, and Card. It seems like all the functions for moderate level works fine.
+
+A more detailed draft of UI has been created by using fxml. Since Scala 3 doesn't have a native fxml support, it has to be manually implemented.
+In this regard, first steps have been taken to manually transfrom fxml code into scalafx code.
+Creating a skeleton version of GUI is underwork and planned to be completed soon.
+
+For the next sprint, plan is finishing the skeleton UI and start connecting it with backend code to make the program working.
