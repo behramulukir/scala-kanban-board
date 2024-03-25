@@ -35,17 +35,11 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
   //Adding a new stage (column)
   def addStage =
     val identifier: String = "2/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString
-    val stage = new Stage(this, identifier)
+    val stage = new Stage(this)
     allStages = allStages.addOne(stage)
     stage
   end addStage
 
-  //Adding a new stage with specified ID
-  def addStageWithID(id: String) =  
-    val stage = new Stage(this, id)
-    allStages = allStages.addOne(stage)
-    stage
-  
   //Remove a stage
   def removeStage(stage: Stage) =
     val indexOfStage = allStages.indexOf(stage)
@@ -57,10 +51,11 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
     cardToArchive.archiveCard()
     archivedCards.addOne(cardToArchive)
   
-  //De archive a card
+  //Dearchive a card
   def dearchiveCard(cardToDearchive: Card) =
     cardToDearchive.dearchiveCard()  
-    archivedCards.addOne(cardToDearchive)
+    var cardIndex = archivedCards.indexOf(cardToDearchive)
+    archivedCards.remove(cardIndex)
   
   //Filter cards based on the list of tags provided
   def filter(tags: Buffer[Tag]): Buffer[Card] =

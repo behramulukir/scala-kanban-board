@@ -28,6 +28,8 @@ class KanbanApp:
     board
   end addBoard
 
+//Import and Export functins are commented out, they are not working at the moment
+  /*
   //Function to import from files
   //Template part is not ready yet
   def importFunc(file: String) =
@@ -183,5 +185,6 @@ class KanbanApp:
       bufferedWriter.newLine()
 
     bufferedWriter.close()
-
+  
   end exportFunc
+  */

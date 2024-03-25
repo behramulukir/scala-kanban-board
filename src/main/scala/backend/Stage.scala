@@ -14,8 +14,8 @@ class Stage(board: Board) {
   var allCards: Buffer[Card] = Buffer()
 
   //Dimensions of a stage, they are dependent on the window size
-  var width = ???
-  var height = ???
+  var width = 100
+  var height = 100
   
   //Adding a card to this stage
   def addCard = {

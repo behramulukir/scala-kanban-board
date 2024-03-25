@@ -9,11 +9,14 @@ import scala.util.Random
 class Card(board: Board, initialStage: Stage) {
   
   //Dimesions of the card, dependent on the window size
-  var width = ???
-  var height = ???
+  var width = 100
+  var height = 100
   
   //At what stage/column the card is at
   var stage = initialStage
+  
+  //Archive status of the card
+  var archiveStatus = false
   
   //List of tags for the card
   var tags: Buffer[Tag] = Buffer()
@@ -78,16 +81,19 @@ class Card(board: Board, initialStage: Stage) {
 
   //Functino for changing the color of the card
   def changeColor(newColor: Color) = color = newColor
-
+  
+  //Function for simply a tag to this card
+  def addTag(newTag: Tag) = {
+    tags = tags.addOne(newTag)
+    newTag.addCard(this)
+  }
+  
   //Function that creates a tag if it doesn't exist before
-  def tagCreation(tagName: String) = {
+  private def tagCreation(tagName: String) = {
     var newTag = new Tag(tagName)
     this.board.allTags.addOne(newTag)
     addTag(newTag)
   }
-
-  //Function for simply a tag to this card
-  def addTag(newTag: Tag) = tags = tags.addOne(newTag)
 
   //Function that is actually used while adding a tag to the card. 
   //It checks if that tag exists, if not creates the tag and adds to the card. 
@@ -103,7 +109,10 @@ class Card(board: Board, initialStage: Stage) {
   }
 
   //Function for removing a tag from the card
-  def removeTag(tag: Tag): Unit = tags.remove(tags.indexOf(tag))
+  def removeTag(tag: Tag): Unit = {
+    tags.remove(tags.indexOf(tag))
+    tag.removeCard(this)
+  }
 
   //Function for adding a template to the card
   def addTemplate(image: Image) = template = Some(image)
@@ -148,4 +157,9 @@ class Card(board: Board, initialStage: Stage) {
   //Function for changing the stage/column of the card
   def changeStage(newStage: Stage) = stage = newStage
 
+  //Archiving functionality for the card
+  def archiveCard() = archiveStatus = true
+  
+  //Dearchiving functionality for the card
+  def dearchiveCard() = archiveStatus = false
 }
