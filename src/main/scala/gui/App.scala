@@ -20,6 +20,23 @@ object App extends JFXApp3:
     kanban.addBoard("Initial Board")
     var currentBoard = kanban.allBoards.head
 
+    var stage1 = currentBoard.addStage
+    var card1 = stage1.addCard
+    var card11 = stage1.addCard
+
+    var stage2 = currentBoard.addStage
+    var card2 = stage2.addCard
+
+    var stage3 = currentBoard.addStage
+    var card3 = stage3.addCard
+
+    var stage4 = currentBoard.addStage
+    var card4 = stage4.addCard
+
+    var stage5 = currentBoard.addStage
+    var card5 = stage5.addCard
+
+
     //Big container for the GUI
     val mainContainer = new VBox()
       //I don't have CSS stylesheet yet, I have only created fxml UI draft
@@ -27,7 +44,7 @@ object App extends JFXApp3:
 
     //Top menu bar for some settings such as changing to other boards, import, and export
     val topBar = new MenuBar():
-      prefHeight <== mainContainer.height / 20
+      prefHeight <== mainContainer.height * 0.05
       prefWidth <== mainContainer.width
 
        //Menu 1 - Settings. There are menu items for things such as changing board name
@@ -51,29 +68,13 @@ object App extends JFXApp3:
        menus = List(setting, boards, fileManagement)
 
     mainContainer.children += topBar
-
-    //Anchor pane that contains left settings bar and Kanban App Container
-    val appContainer = new AnchorPane()
-
-    //Pane that contains left-side settings such as archive, tags, add board, add list
-    val leftPane = new Pane():
-      prefHeight <== appContainer.height
-      prefWidth <== appContainer.width / 5
-
-    //Archive button showing all archived cards with their descriptions
-    val archiveButton = new MenuButton("Archive"):
-      val archiveList = Buffer[MenuItem]()
-      for i <- currentBoard.archivedCards do archiveList += new MenuItem(i.description)
-      items = archiveList.toList
-
-    //Adding archive button to left pane and adjusting its location
-    leftPane.children += archiveButton
     
-    //Adding left pane to app container
-    appContainer.children += leftPane
-
-    //Adding app container to main contaier
-    mainContainer.children += appContainer
+    
+    var kanbanui = new KanbanUI(mainContainer, currentBoard)
+    
+    mainContainer.children += kanbanui
+    
+    
 
     //Thing that runs the application
     stage = new JFXApp3.PrimaryStage:

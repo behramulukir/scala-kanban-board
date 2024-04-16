@@ -17,15 +17,25 @@ class Stage(board: Board) {
   var width = 100
   var height = 100
   
+  //Description of the stage
+  var name = "StageName"
+  
+  //Changing the stage name
+  def changeName(newName: String) = {
+    name = newName
+  }
+  
   //Adding a card to this stage
   def addCard = {
     val card = new Card(this.board, this)
     allCards = allCards.addOne(card)
+    board.addCard(card)
   }
 
   //Removing a card from the stage and deleting it completely
   def removeCard(card: Card): Unit = {
     val indexOfStage = allCards.indexOf(card)
     allCards.remove(indexOfStage)
+    board.removeCard(card)
   }
 }
