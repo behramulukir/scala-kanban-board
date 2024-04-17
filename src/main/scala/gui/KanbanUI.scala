@@ -13,8 +13,7 @@ import scalafx.scene.paint.*
 import scala.collection.mutable
 import scala.language.implicitConversions
 
-class KanbanUI(parentBox: VBox, board: Board) extends HBox:
-
+class KanbanUI(parentBox: VBox, board: Board) extends HBox() {
   //Defining the current board
   var currentBoard = board
 
@@ -29,6 +28,14 @@ class KanbanUI(parentBox: VBox, board: Board) extends HBox:
   //Adding menubarui and boardui
   this.children += menubarui
   this.children += boardui
+
+  def addToArchiveMenu(cardui: CardUI) = {
+    menubarui.addArchiveCard(cardui)
+  }
+
+}
+
+
 
 
 

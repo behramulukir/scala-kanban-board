@@ -15,11 +15,11 @@ import scalafx.scene.paint.*
 import scala.collection.mutable
 import scala.language.implicitConversions
 
-class BoardUI(parentPane: HBox, board: Board) extends TitledPane{
+class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
 
   //Defining the title of titled pane
   this.text = board.name
-
+  var currentParentPane = parentPane
   var currentBoard = board
 
 

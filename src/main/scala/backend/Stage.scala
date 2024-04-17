@@ -12,6 +12,9 @@ class Stage(board: Board) {
   
   //List of all cards in the stage
   var allCards: Buffer[Card] = Buffer()
+  
+  //Board of stage
+  var currentBoard = board
 
   //Dimensions of a stage, they are dependent on the window size
   var width = 100

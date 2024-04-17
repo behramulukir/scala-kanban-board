@@ -85,10 +85,11 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
   //Archive card from view
   def archiveCardUI(cardui: CardUI): Unit = {
-    cardui.currentCard.archiveCard()
+    currentStage.currentBoard.archiveCard(cardui.currentCard)
     this.children.remove(this.children.indexOf(cardui.currentCardPane.get))
+    parentPane.currentParentPane.addToArchiveMenu(cardui)
   }
-  
+
   //Delete a card from view
   def removeCardUI(cardui: CardUI): Unit = {
     this.currentStage.removeCard(cardui.currentCard)

@@ -16,7 +16,7 @@ import scala.collection.mutable
 import scala.language.implicitConversions
 
 //Pane that contains left-side settings such as archive, tags, add board, add list
-class MenuBarUI(parentPane: HBox, boardui: BoardUI) extends VBox{
+class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
 
 
   var currentBoard = boardui.currentBoard
@@ -25,9 +25,20 @@ class MenuBarUI(parentPane: HBox, boardui: BoardUI) extends VBox{
   this.prefWidth <== parentPane.width * 0.15
 
   //Archive button showing all archived cards with their descriptions
+  val archiveList = Buffer[MenuItem]()
   val archiveButton = new MenuButton("Archive"):
-    val archiveList = Buffer[MenuItem]()
-    for i <- currentBoard.archivedCards do archiveList += new MenuItem(i.description)
+    for i <- currentBoard.archivedCards do
+      var archiveElement = new ArchivedCard(i)
+      archiveElement.onAction = (event) => {
+        var selectedCards = boardui.currentBoard.archivedCards.filter(_.identifier == archiveElement.identifier)
+        var deArchiveCard = selectedCards.head
+        boardui.currentBoard.dearchiveCard(deArchiveCard)
+        var stageToReturn = deArchiveCard.stage.identifier
+        var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
+        var stageUIToReturn = stageUIList.head
+        stageUIToReturn.addCardUI(deArchiveCard)
+      }
+      archiveList += archiveElement
     items = archiveList.toList
 
   val archivePane = new StackPane():
@@ -67,4 +78,22 @@ class MenuBarUI(parentPane: HBox, boardui: BoardUI) extends VBox{
   this.children += listButtonPane
   this.children += boardButtonPane
 
+
+  //Function to add cards to archive
+  def addArchiveCard(cardui: CardUI) = {
+    var archiveElement = new ArchivedCard(cardui.currentCard)
+      archiveElement.onAction = (event) => {
+        var selectedCards = boardui.currentBoard.archivedCards.filter(_.identifier == archiveElement.identifier)
+        var deArchiveCard = selectedCards.head
+        boardui.currentBoard.dearchiveCard(deArchiveCard)
+        var stageToReturn = deArchiveCard.stage.identifier
+        var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
+        var stageUIToReturn = stageUIList.head
+        stageUIToReturn.addCardUI(deArchiveCard)
+      }
+      archiveList += archiveElement
+    archiveButton.items = archiveList.toList
+  }
+
 }
+

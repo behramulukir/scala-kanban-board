@@ -9,7 +9,8 @@ import scalafx.scene.Scene
 import scalafx.scene.layout.{AnchorPane, Border, BorderPane, BorderStroke, BorderStrokeStyle, BorderWidths, CornerRadii, FlowPane, Pane, StackPane, VBox}
 import scalafx.geometry.Pos
 import scalafx.geometry.Pos.Center
-import scalafx.scene.control.{Menu, MenuBar, MenuButton, MenuItem, TextArea}
+import scalafx.scene.control.ButtonBar.ButtonData
+import scalafx.scene.control.{ButtonType, DatePicker, Dialog, DialogPane, Menu, MenuBar, MenuButton, MenuItem, TextArea}
 import scalafx.scene.paint.*
 import scalafx.scene.text.{Text, TextAlignment, TextFlow}
 
@@ -53,17 +54,52 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
   //Menu buttons for card actions
   var cardActions = new MenuButton()
 
+  //Card remove button
   var removeButton = new MenuItem("Remove")
   removeButton.onAction = (event) => {
     currentParentNode.removeCardUI(this)
   }
 
+  //Card Archive Button
   var archiveButton = new MenuItem("Archive")
   archiveButton.onAction = (event) => {
     currentParentNode.archiveCardUI(this)
   }
 
+  //Card deadline picker button
   var deadlineButton = new MenuItem("Add Deadline")
+  deadlineButton.onAction = (event) => {
+    var datePickDialog = new Dialog[LocalDate]() {
+      initOwner(App.stage)
+      title = "Pick a deadline"
+      headerText = "Please pick a deadline for this card"
+    }
+    var datePicker = new DatePicker()
+    var okayButton = new ButtonType("Okay!", ButtonData.OKDone)
+    datePickDialog.dialogPane().getButtonTypes.add(okayButton)
+    datePickDialog.dialogPane().getButtonTypes.add(ButtonType.Cancel)
+    //datePickDialog.dialogPane().getButtonTypes.clear()
+    datePickDialog.dialogPane().setContent(datePicker)
+    datePickDialog.resultConverter = dialogButton => {
+      if dialogButton == okayButton then datePicker.getValue else null
+    }
+    var newDeadlinePick = datePickDialog.showAndWait()
+    var newDeadline: Option[LocalDate] = newDeadlinePick match
+      case Some(date: LocalDate) => Some(date)
+      case None => None
+    if newDeadline.isDefined then
+      card.changeDeadline(newDeadline.get)
+      print(card.deadline)
+      var deadline = card.deadline.get
+      var daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), deadline)
+      deadlineText = new Text(daysLeft.toString + " days left")
+    else
+      deadlineText = new Text("No deadline")
+
+    deadlineUI.children = deadlineText
+  }
+
+
 
   var tagButton = new MenuItem("Add Tag")
 
@@ -98,4 +134,10 @@ class CardPane(cardUI: CardUI) extends StackPane{
   this.children = cardUI
   this.setAlignment(Center)
   this.setBorder(new Border(new BorderStroke(cardUI.currentCard.color, BorderStrokeStyle.Solid, CornerRadii(2), BorderWidths(3))))
+}
+
+class ArchivedCard(card: Card) extends MenuItem(card.description) {
+  var description = card.description
+  var identifier = card.identifier
+
 }
