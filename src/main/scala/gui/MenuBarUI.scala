@@ -16,10 +16,10 @@ import scala.collection.mutable
 import scala.language.implicitConversions
 
 //Pane that contains left-side settings such as archive, tags, add board, add list
-class MenuBarUI(parentPane: HBox, board: Board) extends VBox{
+class MenuBarUI(parentPane: HBox, boardui: BoardUI) extends VBox{
 
 
-  var currentBoard = board
+  var currentBoard = boardui.currentBoard
 
   this.prefHeight <== parentPane.height
   this.prefWidth <== parentPane.width * 0.15
@@ -45,7 +45,11 @@ class MenuBarUI(parentPane: HBox, board: Board) extends VBox{
     children += tagsButton
 
   //List button to add lists
-  val listButton = new Button("Add List")
+  val listButton = new Button("Add List"):
+    onAction = (event) => {
+      var newStage = boardui.currentBoard.addStage
+      boardui.addStageUI(newStage)
+    }
   val listButtonPane = new StackPane():
     prefHeight <== parentPane.height / 6
     children += listButton

@@ -22,13 +22,17 @@ class KanbanUI(parentBox: VBox, board: Board) extends HBox:
   this.prefHeight <== parentBox.height * 0.95
   this.prefWidth <== parentBox.width
 
-  //Creating menu bar and adding it
-  var menubarui = new MenuBarUI(this, currentBoard)
-  this.children += menubarui
-
-  //Creating board ui and adding it
+  //Creating menu bar and board ui
   var boardui = new BoardUI(this, currentBoard)
+  var menubarui = new MenuBarUI(this, boardui)
+
+  //Adding menubarui and boardui
+  this.children += menubarui
   this.children += boardui
+
+
+
+
 
  
 

@@ -158,8 +158,12 @@ class Card(board: Board, initialStage: Stage) {
   def changeStage(newStage: Stage) = stage = newStage
 
   //Archiving functionality for the card
-  def archiveCard() = archiveStatus = true
+  def archiveCard() = {
+    archiveStatus = true
+  }
   
   //Dearchiving functionality for the card
-  def dearchiveCard() = archiveStatus = false
+  def dearchiveCard() = {
+    archiveStatus = false
+  }
 }

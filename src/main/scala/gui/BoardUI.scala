@@ -20,15 +20,16 @@ class BoardUI(parentPane: HBox, board: Board) extends TitledPane{
   //Defining the title of titled pane
   this.text = board.name
 
+  var currentBoard = board
+
 
   //Defining the dimensions
   this.prefHeight <== parentPane.height
   this.prefWidth <== parentPane.width * 0.85
 
-
   //Creating ScrollPane
   var boardScroll = new ScrollPane()
-  boardScroll.pannable = true
+  //boardScroll.pannable = true
 
   //Creating BoardHBox
   var boardHBox = new HBox()
@@ -41,7 +42,22 @@ class BoardUI(parentPane: HBox, board: Board) extends TitledPane{
   this.setContent(boardScroll)
 
   //Adding StageUI to BoardHBox
-  for i <- board.allStages do boardHBox.children += new StageUI(this, board, i)
+  var stageUIList = ListBuffer[StageUI]()
+  def addStageUI(stage: Stage) = {
+    stageUIList += new StageUI(this, board, stage)
+    boardHBox.children = stageUIList
+  }
+
+  //Adding all stages to board initially
+  for i <- board.allStages do
+    addStageUI(i)
+
+  //Remove stage for UI
+  def removeStageUI(stageui: StageUI): Unit = {
+    board.removeStage(stageui.currentStage)
+    stageUIList.remove(stageUIList.indexOf(stageui))
+    boardHBox.children = stageUIList
+  }
 
 
 }

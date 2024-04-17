@@ -16,6 +16,7 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
   var allCards: Buffer[Card] = Buffer()
   var allTags: Buffer[Tag] = Buffer()
   var archivedCards: Buffer[Card] = Buffer()
+  var showableCards: Buffer[Card] = Buffer()
   
   //Background feature for board
   var background: Option[Image] = None
@@ -42,6 +43,9 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
 
   //Remove a stage
   def removeStage(stage: Stage) =
+    for card <- stage.allCards do {
+      this.removeCard(card)
+    }
     val indexOfStage = allStages.indexOf(stage)
     allStages.remove(indexOfStage)
   end removeStage
@@ -56,11 +60,10 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
     cardToDearchive.dearchiveCard()  
     var cardIndex = archivedCards.indexOf(cardToDearchive)
     archivedCards.remove(cardIndex)
+    showableCards += cardToDearchive
   
   //Filter cards based on the list of tags provided
   def filter(tags: Buffer[Tag]): Buffer[Card] =
-    var showableCards: Buffer[Card] = Buffer()
-
     for i <- tags do
       showableCards = showableCards.addAll(allCards.filter(_.tags.contains(i)))
     showableCards

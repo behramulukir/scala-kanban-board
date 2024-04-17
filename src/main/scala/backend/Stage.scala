@@ -18,7 +18,7 @@ class Stage(board: Board) {
   var height = 100
   
   //Description of the stage
-  var name = "StageName"
+  var name = "Stage Name"
   
   //Changing the stage name
   def changeName(newName: String) = {
@@ -30,6 +30,7 @@ class Stage(board: Board) {
     val card = new Card(this.board, this)
     allCards = allCards.addOne(card)
     board.addCard(card)
+    card
   }
 
   //Removing a card from the stage and deleting it completely
