@@ -10,10 +10,11 @@ import java.io.*
 import java.awt.*
 import java.time.format.DateTimeFormatter
 
-class KanbanApp:
+object KanbanApp:
   
   //Lists for all elements
-  var allBoards: Buffer[Board] = Buffer()
+  var initialBoard = new Board("Initial Board")
+  var allBoards: Buffer[Board] = Buffer(initialBoard)
   var allStages: Buffer[Stage] = Buffer()
   var allCards: Buffer[Card] = Buffer()
   var allTags: Buffer[Tag] = Buffer()
@@ -23,7 +24,7 @@ class KanbanApp:
 
   //Adding a board to the app
   def addBoard(name: String): Board =
-    val board = new Board(name, this)
+    val board = new Board(name)
     allBoards = allBoards.addOne(board)
     board
   end addBoard

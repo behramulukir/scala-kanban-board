@@ -4,7 +4,7 @@ import scalafx.scene.image.*
 import java.time._
 import scala.collection.mutable._
 
-class Board(boardName: String, kanbanApp: KanbanApp) {
+class Board(boardName: String) {
   //Creating a random identifier for each board
   private val random = scala.util.Random
   val identifier: String = "1/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString // How to assign each item a unique identifier was described detailedly in the technical plan.
@@ -77,5 +77,31 @@ class Board(boardName: String, kanbanApp: KanbanApp) {
     background = Some(image)
   end changeBackground
 
+  //Function that creates a tag if it doesn't exist before
+  private def tagCreation(tagName: String) = {
+    var newTag = new Tag(tagName)
+    this.allTags.addOne(newTag)
+  }
+
+  //Function that is actually used while adding a tag to the card. 
+  //It checks if that tag exists, if not creates the tag and adds to the card. 
+  //If the tag exists, it adds the tag to the card
+  def tagAddition(tagName: String): Boolean ={
+    var tagIndex = -1
+    
+    if tagName != "" then
+      if this.allTags.forall(_.name != tagName) then
+        tagCreation(tagName)
+        true
+      else 
+        false
+    else
+      false
+
+  }
+
+  def removeTag(tag: Tag) = {
+    allTags.remove(allTags.indexOf(tag))
+  }
   
 }

@@ -58,7 +58,17 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
     stageUIList.remove(stageUIList.indexOf(stageui))
     boardHBox.children = stageUIList
   }
+  
+  def removeTagUI(string: String) = {
+    parentPane.removeTagMenu(string)
+  }
 
+
+}
+
+class BoardItem(board: Board) extends MenuItem(board.name) {
+  var description = board.name
+  var identifier = board.identifier
 
 }
 

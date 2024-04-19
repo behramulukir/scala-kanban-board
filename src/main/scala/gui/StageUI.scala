@@ -18,6 +18,7 @@ import scala.language.implicitConversions
 class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
   var currentStage = stage
+  val currentParentPane = parentPane
 
   this.prefHeight <== parentPane.height
   this.prefWidth = 200

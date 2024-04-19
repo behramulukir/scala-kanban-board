@@ -29,8 +29,14 @@ class KanbanUI(parentBox: VBox, board: Board) extends HBox() {
   this.children += menubarui
   this.children += boardui
 
+  //Function to add cards to archive menu button
   def addToArchiveMenu(cardui: CardUI) = {
     menubarui.addArchiveCard(cardui)
+  }
+  
+  //Function to remove items from the tag menu
+  def removeTagMenu(string: String) = {
+    menubarui.removeTagButton(string)
   }
 
 }
