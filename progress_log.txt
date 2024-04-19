@@ -17,3 +17,14 @@ In this regard, first steps have been taken to manually transfrom fxml code into
 Creating a skeleton version of GUI is underwork and planned to be completed soon.
 
 For the next sprint, plan is finishing the skeleton UI and start connecting it with backend code to make the program working.
+
+Sprint 3:
+This was the sprint that I did the most. In the beginning of this sprint, I had only a very early version of skeleton and I had to code a responsive GUI.
+
+I first completed the skeleton UI which was unresponsive back then. After that, I started coding actions for the GUI.
+At the moment, users can do most of the actions they would like to do such as:
+Adding boards, changing board names, adding/removing stages, adding/removing cards, adding/removing deadlines and time-tracking, adding cards to archive and removing them back.
+GUI is almost done except tag filtering and drag and drop functionality.
+I also need to a file save functions as now it starts with empty app in every launch.
+
+This is the last sprint and I will be submitting the project next week. I am hopeful that I will be able to finish the project until then.
