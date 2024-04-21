@@ -10,7 +10,9 @@ import scalafx.scene.layout.{AnchorPane, Border, BorderPane, BorderStroke, Borde
 import scalafx.geometry.Pos
 import scalafx.geometry.Pos.Center
 import scalafx.scene.control.{Button, ButtonBar, Menu, MenuBar, MenuButton, MenuItem, TextField, TitledPane}
+import scalafx.scene.input.{DragEvent, TransferMode}
 import scalafx.scene.paint.*
+import scalafx.Includes.{jfxMouseEvent2sfx, jfxDragEvent2sfx}
 
 import scala.collection.mutable
 import scala.language.implicitConversions
@@ -76,11 +78,15 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
   //Function for adding CardUIs to the box
   def addCardUI(card: Card) = {
-    var cardui = new CardUI(this, card)
-    cardUIList.addOne(cardui)
-    var cardpane = new CardPane(cardui)
-    cardPaneList.addOne(cardpane)
-    this.children += cardpane
+    if currentParentPane.cardUIList.filter(_.currentCard == card).nonEmpty then
+      this.children += currentParentPane.cardUIList.filter(_.currentCard == card).head.currentCardPane.get
+    else
+      var cardui = new CardUI(this, card)
+      cardUIList.addOne(cardui)
+      var cardpane = new CardPane(cardui)
+      cardPaneList.addOne(cardpane)
+      currentParentPane.cardUIList.addOne(cardui)
+      this.children += cardpane
   }
 
   //Adding cards in stage initially
@@ -131,6 +137,32 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
     cardUIList.remove(cardUIList.indexOf(cardui))
     currentStage.allCards.remove(currentStage.allCards.indexOf(cardui.currentCard))
     this.children.remove(this.children.indexOf(cardui.currentCardPane.get))
+  }
+
+
+  //When a card is dragged over a stage
+  this.onDragOver = (event) => {
+    if event.getGestureSource() != this && event.getDragboard().hasString() then
+      event.acceptTransferModes(TransferMode.Move)
+    event.consume()
+  }
+
+  //When a card is dropped on a stage
+  this.onDragDropped = (event) =>  {
+    var status = false
+    if event.getDragboard.hasString() then
+      var cardid = event.getDragboard.getString
+      for stageui <- currentParentPane.stageUIList do
+        var carduiIndex = 0
+          while !status && carduiIndex < stageui.cardUIList.length do
+            var cardui = stageui.cardUIList(carduiIndex)
+            if cardui.currentCard.identifier == cardid then
+              cardui.moveCard(cardui.currentParentNode, this, cardui)
+              status = true
+            carduiIndex += 1
+
+    event.setDropCompleted(true)
+    event.consume()
   }
 
   //Adding border to stages to make it easy to distinguish

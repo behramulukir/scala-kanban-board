@@ -21,7 +21,7 @@ class Stage(board: Board) {
   var height = 100
   
   //Description of the stage
-  var name = "Stage Name"
+  var name = "List name"
   
   //Changing the stage name
   def changeName(newName: String) = {

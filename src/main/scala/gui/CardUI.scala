@@ -4,9 +4,9 @@ import backend.*
 import javafx.beans.value.{ChangeListener, ObservableValue}
 
 import scala.collection.mutable.*
-import scalafx.application.JFXApp3
-import scalafx.scene.Scene
+import scalafx.scene.{Scene, SnapshotParameters}
 import scalafx.scene.layout.{AnchorPane, Border, BorderPane, BorderStroke, BorderStrokeStyle, BorderWidths, CornerRadii, FlowPane, Pane, StackPane, VBox}
+import scalafx.scene.input.{ClipboardContent, DragEvent, MouseEvent, TransferMode}
 import scalafx.geometry.Pos
 import scalafx.geometry.Pos.Center
 import scalafx.scene.control.Alert.AlertType
@@ -14,6 +14,7 @@ import scalafx.scene.control.ButtonBar.ButtonData
 import scalafx.scene.control.{Alert, ButtonType, ChoiceDialog, DatePicker, Dialog, DialogPane, Menu, MenuBar, MenuButton, MenuItem, TextArea}
 import scalafx.scene.paint.*
 import scalafx.scene.text.{Text, TextAlignment, TextFlow}
+import scalafx.Includes.{jfxMouseEvent2sfx, jfxDragEvent2sfx}
 
 import java.time.*
 import java.time.temporal.ChronoUnit
@@ -194,10 +195,7 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
         var chosenString = result.get
         var indexOfChosenStageUI = chosenString(chosenString.length - 2).asDigit
         var chosenStageUI = currentParentNode.currentParentPane.stageUIList(indexOfChosenStageUI - 1)
-        currentParentNode.moveOutCardUI(this)
-        currentParentNode = chosenStageUI
-        chosenStageUI.moveInCardUI(this)
-        currentCard.changeStage(chosenStageUI.currentStage)
+        moveCard(this.currentParentNode, chosenStageUI, this)
   }
 
   //Function to remove deleted tags from the tag list
@@ -215,6 +213,14 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
     var newParentNode = currentParentNode.currentParentPane.stageUIList.filter(_.currentStage == stage).head
     currentParentNode = newParentNode
     currentParentNode.children += currentCardPane.get
+  }
+
+  //Moving card from one stage to another
+  def moveCard(oldStage: StageUI, newStage: StageUI, cardui: CardUI) = {
+    oldStage.moveOutCardUI(cardui)
+    cardui.currentParentNode = newStage
+    newStage.moveInCardUI(this)
+    currentCard.changeStage(newStage.currentStage)
   }
 
 
@@ -238,6 +244,27 @@ class CardPane(cardUI: CardUI) extends StackPane{
   this.children = cardUI
   this.setAlignment(Center)
   this.setBorder(new Border(new BorderStroke(cardUI.currentCard.color, BorderStrokeStyle.Solid, CornerRadii(2), BorderWidths(3))))
+
+  //Drag event starts
+  def dragStart(event: MouseEvent) = {
+    var dragStatus = startDragAndDrop(TransferMode.Any:_*)
+    var cardIDClip = new ClipboardContent()
+    cardIDClip.putString(cardUI.currentCard.identifier)
+    dragStatus.setContent(cardIDClip)
+    this.setScaleX(0.8)
+    this.setScaleY(0.8)
+    var snapshotParams = new SnapshotParameters()
+    dragStatus.setDragView(this.snapshot(snapshotParams, null), event.getX(), event.getY())
+    event.consume()
+  }
+  this.onDragDetected = (event) => dragStart(event)
+
+  //Drag event is finished
+  def dragDone(event: DragEvent) = {
+    this.setScaleX(1)
+    this.setScaleY(1)
+  }
+  this.onDragDone = (event) => dragDone(event)
 }
 
 class ArchivedCard(card: Card) extends MenuItem(card.description) {

@@ -22,6 +22,11 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
   var currentParentPane = parentPane
   var currentBoard = board
 
+  //List of stage uis
+  var stageUIList = ListBuffer[StageUI]()
+
+  //List of card uis
+  var cardUIList = ListBuffer[CardUI]()
 
   //Defining the dimensions
   this.prefHeight <== parentPane.height
@@ -42,7 +47,7 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
   this.setContent(boardScroll)
 
   //Adding StageUI to BoardHBox
-  var stageUIList = ListBuffer[StageUI]()
+  
   def addStageUI(stage: Stage) = {
     stageUIList += new StageUI(this, board, stage)
     boardHBox.children = stageUIList
