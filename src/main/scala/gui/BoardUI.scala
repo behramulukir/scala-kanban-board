@@ -54,6 +54,9 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
 
   //Remove stage for UI
   def removeStageUI(stageui: StageUI): Unit = {
+    for card <- stageui.currentStage.allCards do
+      if card.archiveStatus then
+        parentPane.menubarui.deArchiveCardButton(card)
     board.removeStage(stageui.currentStage)
     stageUIList.remove(stageUIList.indexOf(stageui))
     boardHBox.children = stageUIList
@@ -67,6 +70,7 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
 }
 
 class BoardItem(board: Board) extends MenuItem(board.name) {
+  var currboard = board
   var description = board.name
   var identifier = board.identifier
 

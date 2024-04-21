@@ -87,8 +87,6 @@ class Card(board: Board, initialStage: Stage) {
     tags = tags.addOne(newTag)
     newTag.addCard(this)
   }
-  
-
 
   //Function for removing a tag from the card
   def removeTag(tag: Tag): Unit = {

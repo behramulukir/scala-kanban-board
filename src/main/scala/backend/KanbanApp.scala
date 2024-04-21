@@ -28,6 +28,11 @@ object KanbanApp:
     allBoards = allBoards.addOne(board)
     board
   end addBoard
+  
+  //Deleting a board from the app
+  def deleteBoard(board: Board) =
+    allBoards.remove(allBoards.indexOf(board))
+  end deleteBoard
 
 //Import and Export functins are commented out, they are not working at the moment
   /*

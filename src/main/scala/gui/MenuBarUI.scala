@@ -9,8 +9,10 @@ import scalafx.scene.Scene
 import scalafx.scene.layout.{AnchorPane, BorderPane, HBox, Pane, StackPane, VBox}
 import scalafx.geometry.Pos
 import scalafx.geometry.Pos.Center
-import scalafx.scene.control.{Button, ComboBox, Menu, MenuBar, MenuButton, MenuItem, TextInputDialog}
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.{Alert, Button, ChoiceDialog, ComboBox, Menu, MenuBar, MenuButton, MenuItem, TextInputDialog}
 import scalafx.scene.paint.*
+import scalafx.scene.text.Text
 
 import scala.collection.mutable
 import scala.language.implicitConversions
@@ -46,10 +48,24 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
     prefHeight <== parentPane.height / 3
     children += archiveButton
 
-  //Tags button showing all archived cards with their descriptions
+  //Tags button to filter cards based on the tag
   val tagsList = Buffer[MenuItem]()
   val tagsButton = new MenuButton("Tags"):
-    for i <- currentBoard.allTags do tagsList += new MenuItem(i.name)
+    tagsList += new MenuItem("No filtering"):
+      onAction = (event) => {
+        for stageui <- boardui.stageUIList do
+          stageui.removeFiltering
+      }
+
+    for i <- currentBoard.allTags do tagsList += new MenuItem(i.name):
+      onAction = (event) => {
+        var filterTag = currentBoard.allTags.filter(_.name == i.name).head
+        var showCards = currentBoard.filter(filterTag)
+        for stageui <- boardui.stageUIList do
+          stageui.removeFiltering
+          stageui.filterCardUI(filterTag)
+      }
+
     items = tagsList.toList
 
   val tagsPane = new StackPane():
@@ -66,9 +82,12 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
     prefHeight <== parentPane.height / 6
     children += listButton
 
-  //Board button to add boards
-  val addTagButton = new Button("Add Tag")
-  addTagButton.onAction = (event) => {
+  //Menu button to manage tags (create tag / delete tag)
+  val manageTags = new MenuButton("Manage Tags")
+
+  //Menu item for creating tags
+  val createTag = new MenuItem("Create Tag"):
+    onAction = (event) => {
     val dialog = new TextInputDialog(defaultValue = "New Tag") {
       initOwner(App.stage)
       title = "Create a new tag"
@@ -76,27 +95,69 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
       contentText = "Name of the tag:"
     }
 
-    val result = dialog.showAndWait()
-    var newTagStatus = currentBoard.tagAddition(result.getOrElse(""))
-    if newTagStatus then
-      if result.getOrElse("") != "" then
-        tagsList += new MenuItem(result.get)
-      
-    tagsButton.items = tagsList
-  }
-  
-  
-  val addTagButtonPane = new StackPane():
+      val result = dialog.showAndWait()
+      var newTagStatus = currentBoard.tagAddition(result.getOrElse(""))
+      if newTagStatus then
+        if result.getOrElse("") != "" then
+          tagsList += new MenuItem(result.get):
+            onAction = (event) => {
+              var filterTag = currentBoard.allTags.filter(_.name == this.getText).head
+              var showCards = currentBoard.filter(filterTag)
+              for stageui <- boardui.stageUIList do
+                stageui.removeFiltering
+                stageui.filterCardUI(filterTag)
+            }
+
+      tagsButton.items = tagsList
+    }
+
+  //Menu item for deleting tags
+  val deleteTag = new MenuItem("Delete Tag"):
+    onAction = (event) => {
+      if currentBoard.allTags.isEmpty then
+        new Alert(AlertType.Information) {
+          initOwner(App.stage)
+          title = "Tag Warning!"
+          headerText = "There isn't any tag to delete."
+          contentText = "You can create tags from the left-side bar."
+        }.showAndWait()
+      else
+        val choices = currentBoard.allTags.map(_.name)
+        var initialChoice = choices.head
+        val dialog = new ChoiceDialog(defaultChoice = initialChoice, choices = choices) {
+          initOwner(App.stage)
+          title = "Pick a tag"
+          headerText = "Select a tag to delete"
+          contentText = "Selected tag:"
+        }
+
+        val result = dialog.showAndWait()
+        if result.isDefined then
+          var chosenTagName = result.get
+          var chosenTag = currentBoard.allTags.filter(_.name == chosenTagName).head
+          currentBoard.removeTag(chosenTag)
+          removeTagButton(chosenTagName)
+          for stageui <- boardui.stageUIList do
+            stageui.removeFiltering
+            for cardui <- stageui.cardUIList do
+              cardui.deleteTag(chosenTag)
+    }
+
+  manageTags.items = List(createTag, deleteTag)
+
+  //Pane for manage tags menu button
+  val manageTagsPane = new StackPane():
     prefHeight <== parentPane.height / 6
-    children += addTagButton
+    children += manageTags
 
 
 
   //Adding buttons to left pane and adjusting its location
   this.children += archivePane
   this.children += tagsPane
+  this.children += manageTagsPane
   this.children += listButtonPane
-  this.children += addTagButtonPane
+
 
 
   //Function to add cards to archive
@@ -120,13 +181,12 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
   //Function to dearchive cards
   def deArchiveCardButton(card: Card) = {
     archiveList.remove(archiveList.indexOf(archiveList.filter(_.identifier == card.identifier).head))
-    print(archiveList)
     archiveButton.items = archiveList.toList
   }
 
   //Function to remove tags from the menu button list
   def removeTagButton(tagName: String) = {
-    var tagButtonRemove = tagsList.filter(_.text.toString == tagName).head
+    var tagButtonRemove = tagsList.filter(_.getText == tagName).head
     tagsList.remove(tagsList.indexOf(tagButtonRemove))
     tagsButton.items = tagsList
   }

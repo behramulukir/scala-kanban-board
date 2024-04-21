@@ -56,7 +56,7 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
   var cardActions = new MenuButton()
 
   //Card remove button
-  var removeButton = new MenuItem("Remove")
+  var removeButton = new MenuItem("Delete")
   removeButton.onAction = (event) => {
     currentParentNode.removeCardUI(this)
   }
@@ -68,7 +68,7 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
   }
 
   //Card deadline picker button
-  var deadlineButton = new MenuItem("Add Deadline")
+  var deadlineButton = new MenuItem("Add deadline")
   deadlineButton.onAction = (event) => {
     var datePickDialog = new Dialog[LocalDate]() {
       initOwner(App.stage)
@@ -79,7 +79,6 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
     var okayButton = new ButtonType("Okay!", ButtonData.OKDone)
     datePickDialog.dialogPane().getButtonTypes.add(okayButton)
     datePickDialog.dialogPane().getButtonTypes.add(ButtonType.Cancel)
-    //datePickDialog.dialogPane().getButtonTypes.clear()
     datePickDialog.dialogPane().setContent(datePicker)
     datePickDialog.resultConverter = dialogButton => {
       if dialogButton == okayButton then datePicker.getValue else null
@@ -90,7 +89,6 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
       case None => None
     if newDeadline.isDefined then
       card.changeDeadline(newDeadline.get)
-      print(card.deadline)
       var deadline = card.deadline.get
       var daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), deadline)
       deadlineText = new Text(daysLeft.toString + " days left")
@@ -109,7 +107,7 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
   tagsUI.prefWidth <== this.width
 
   //Add tag button
-  var addTagButton = new MenuItem("Add Tag")
+  var addTagButton = new MenuItem("Add tag")
   addTagButton.onAction = (event) => {
     if currentParentNode.currentStage.currentBoard.allTags.isEmpty then
       new Alert(AlertType.Information) {
@@ -140,7 +138,7 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
   }
 
   //Remove tag button
-  var removeTagButton = new MenuItem("Remove Tag")
+  var removeTagButton = new MenuItem("Remove tag")
   removeTagButton.onAction = (event) => {
     if currentCard.tags.isEmpty then
       new Alert(AlertType.Information) {
@@ -169,8 +167,58 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
         tagsUI.children = tagsText
   }
 
+  var changeStageButton = new MenuItem("Change list")
+  changeStageButton.onAction = (event) => {
+    if currentParentNode.currentParentPane.stageUIList.size == 1 then
+      new Alert(AlertType.Information) {
+        initOwner(App.stage)
+        title = "List Warning!"
+        headerText = "There isn't any other list to move this card."
+        contentText = "You can add lists from the left-side bar."
+      }.showAndWait()
+    else
+      var stageChoices = Buffer[String]()
+      var stageNumber = 1
+      for stageui <- currentParentNode.currentParentPane.stageUIList do
+        stageChoices.addOne(stageui.currentStage.name + " (" + stageNumber.toString + ")")
+        stageNumber += 1
+      val dialog = new ChoiceDialog(defaultChoice = stageChoices.head, choices = stageChoices) {
+        initOwner(App.stage)
+        title = "Pick a list"
+        headerText = "Select a list to move this card"
+        contentText = "Selected list:"
+      }
 
-  cardActions.items =  List(removeButton, archiveButton, deadlineButton, addTagButton, removeTagButton)
+      val result = dialog.showAndWait()
+      if result.isDefined then
+        var chosenString = result.get
+        var indexOfChosenStageUI = chosenString(chosenString.length - 2).asDigit
+        var chosenStageUI = currentParentNode.currentParentPane.stageUIList(indexOfChosenStageUI - 1)
+        currentParentNode.moveOutCardUI(this)
+        currentParentNode = chosenStageUI
+        chosenStageUI.moveInCardUI(this)
+        currentCard.changeStage(chosenStageUI.currentStage)
+  }
+
+  //Function to remove deleted tags from the tag list
+  def deleteTag(tag: Tag) = {
+    if currentCard.tags.contains(tag) then currentCard.removeTag(tag)
+    tagsString = card.tags.map(_.name).mkString(", ")
+    var tagsText = new Text(tagsString)
+    tagsUI.children = tagsText
+  }
+
+  // Function to change stage to new stage
+  def changeStageUI(stage: Stage) = {
+    currentCard.changeStage(stage)
+    currentParentNode.removeCardUI(this)
+    var newParentNode = currentParentNode.currentParentPane.stageUIList.filter(_.currentStage == stage).head
+    currentParentNode = newParentNode
+    currentParentNode.children += currentCardPane.get
+  }
+
+
+  cardActions.items =  List(removeButton, archiveButton, deadlineButton, addTagButton, removeTagButton, changeStageButton)
 
   cardActions.prefWidth <== this.width * 0.2
   cardActions.prefHeight <== this.height * 0.2
@@ -195,5 +243,4 @@ class CardPane(cardUI: CardUI) extends StackPane{
 class ArchivedCard(card: Card) extends MenuItem(card.description) {
   var description = card.description
   var identifier = card.identifier
-
 }

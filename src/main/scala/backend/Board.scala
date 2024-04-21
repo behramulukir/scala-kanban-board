@@ -63,9 +63,8 @@ class Board(boardName: String) {
     showableCards += cardToDearchive
   
   //Filter cards based on the list of tags provided
-  def filter(tags: Buffer[Tag]): Buffer[Card] =
-    for i <- tags do
-      showableCards = showableCards.addAll(allCards.filter(_.tags.contains(i)))
+  def filter(tag: Tag): Buffer[Card] =
+    showableCards = showableCards.addAll(allCards.filter(_.tags.contains(tag)))
     showableCards
   end filter
 

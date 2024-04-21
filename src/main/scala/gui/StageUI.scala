@@ -69,11 +69,17 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
   this.children += stageText
   this.children += stageControl
+  
+  //CardPane list
+  var cardUIList = Buffer[CardUI]()
+  var cardPaneList = Buffer[CardPane]()
 
   //Function for adding CardUIs to the box
   def addCardUI(card: Card) = {
     var cardui = new CardUI(this, card)
+    cardUIList.addOne(cardui)
     var cardpane = new CardPane(cardui)
+    cardPaneList.addOne(cardpane)
     this.children += cardpane
   }
 
@@ -93,7 +99,37 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
   //Delete a card from view
   def removeCardUI(cardui: CardUI): Unit = {
+    cardUIList.remove(cardUIList.indexOf(cardui))
     this.currentStage.removeCard(cardui.currentCard)
+    this.children.remove(this.children.indexOf(cardui.currentCardPane.get))
+  }
+
+  //Filtering cards based on tag
+  var filteredCardUI = Buffer[CardUI]()
+  def filterCardUI(tag: Tag) = {
+    filteredCardUI = cardUIList.filterNot(_.currentCard.tags.contains(tag))
+    for element <- filteredCardUI do
+      this.children.remove(this.children.indexOf(element.currentCardPane.get))
+  }
+
+  //Removing tag filter from the view
+  def removeFiltering = {
+    for cardui <- filteredCardUI do
+      this.children.add(cardui.currentCardPane.get)
+    filteredCardUI.clear()
+  }
+
+  //Moving cards to this stage
+  def moveInCardUI(cardUI: CardUI) = {
+    cardUIList.addOne(cardUI)
+    currentStage.allCards.addOne(cardUI.currentCard)
+    this.children.add(cardUI.currentCardPane.get)
+  }
+
+  //Moving cards from this stage
+  def moveOutCardUI(cardui: CardUI) = {
+    cardUIList.remove(cardUIList.indexOf(cardui))
+    currentStage.allCards.remove(currentStage.allCards.indexOf(cardui.currentCard))
     this.children.remove(this.children.indexOf(cardui.currentCardPane.get))
   }
 
