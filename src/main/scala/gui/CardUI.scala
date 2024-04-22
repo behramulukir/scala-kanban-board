@@ -94,6 +94,7 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
       var daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), deadline)
       deadlineText = new Text(daysLeft.toString + " days left")
     else
+      card.deadline = None
       deadlineText = new Text("No deadline")
 
     deadlineUI.children = deadlineText

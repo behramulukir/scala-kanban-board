@@ -2,9 +2,12 @@ import backend.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-//Tests related to the KanbanApp class
+import java.io._
+import java.time.LocalDate
+
+//Tests related to the KanbanApp object
 class AppTest extends AnyFlatSpec with Matchers:
-  val app = backend.KanbanApp()
+  val app = backend.KanbanApp
 
   "App" should "have the correct initial lists" in {
     assert(app.allBoards.isEmpty)
@@ -23,7 +26,7 @@ class AppTest extends AnyFlatSpec with Matchers:
 
 //Tests related to the Board class
 class BoardTest extends AnyFlatSpec with Matchers:
-  val app = backend.KanbanApp()
+  val app = backend.KanbanApp
   val board = app.addBoard("board1")
 
   "Board" should "have the correct initial lists" in {
@@ -50,7 +53,7 @@ class BoardTest extends AnyFlatSpec with Matchers:
 
 //Tests related to the Stage class
 class StageTest extends AnyFlatSpec with Matchers:
-  val app = backend.KanbanApp()
+  val app = backend.KanbanApp
   val board = app.addBoard("board1")
   val stage = board.addStage
 
@@ -68,9 +71,9 @@ class StageTest extends AnyFlatSpec with Matchers:
   }
 
 
-//Tests related to the Card class
+//Tests related to the Card class (and a little bit of board class)
 class CardTest extends AnyFlatSpec with Matchers:
-  val app = backend.KanbanApp()
+  val app = backend.KanbanApp
   val board = app.addBoard("board1")
   val stage = board.addStage
   stage.addCard
@@ -88,12 +91,12 @@ class CardTest extends AnyFlatSpec with Matchers:
     assert(card.description == "test content")
   }
 
-  "Card" should "have operational tag management functions" in {
-    card.tagAddition("test card")
+  "Card and Board" should "have operational tag management functions" in {
+    board.tagAddition("test card")
 
-    assert(card.tags.nonEmpty)
+    assert(board.allTags.nonEmpty)
 
-    var tag = card.tags.head
+    var tag = board.allTags.head
 
     assert(tag.cards.nonEmpty)
 
@@ -113,4 +116,51 @@ class CardTest extends AnyFlatSpec with Matchers:
 
     assert(board.archivedCards.isEmpty)
     assert(card.archiveStatus == false)
+  }
+
+//Tests related to the file saving functions in KanbanApp object
+class saveTest extends AnyFlatSpec with Matchers:
+
+  val app = backend.KanbanApp
+
+  "App" should "create a non-empty Json files to export boards" in {
+
+    val board = app.addBoard("board1")
+    val tag1 = board.tagAddition("tag1")
+    val tag2 = board.tagAddition("tag2")
+
+    val stage1 = board.addStage
+    stage1.changeName("stage1")
+
+    val stage2 = board.addStage
+    stage2.changeName("stage2")
+
+    val stage1card1 = stage1.addCard
+    stage1card1.changeDescription("stage1card1")
+    stage1card1.changeDeadline(LocalDate.now())
+    stage1card1.archiveCard()
+
+    val stage1card2 = stage1.addCard
+    stage1card2.changeDescription("stage1card2")
+    stage1card2.addTag(board.allTags.head)
+
+    val stage2card1 = stage2.addCard
+    stage2card1.changeDescription("stage2card1")
+
+    val dirName = "./src/main/data"
+    val folder = new File(dirName)
+
+    app.exportBoard(board)
+    assert(folder.listFiles().nonEmpty)
+  }
+
+  "App" should "read Json files and create the board and its elements accordingly" in {
+    app.importBoard("./src/main/data/board1")
+
+    val board = app.allBoards.head
+
+    assert(board.name == "board1")
+    assert(board.allTags.size == 2)
+    assert(board.allStages.size == 2)
+    assert(board.allCards.size == 3)
   }

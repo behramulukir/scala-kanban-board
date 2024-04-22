@@ -8,7 +8,7 @@ class Stage(board: Board) {
   
   //Unique identifier for stage
   private val random = scala.util.Random
-  val identifier: String = "2/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString
+  var identifier: String = "2/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString
   
   //List of all cards in the stage
   var allCards: Buffer[Card] = Buffer()

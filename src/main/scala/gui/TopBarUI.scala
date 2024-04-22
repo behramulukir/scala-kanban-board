@@ -38,7 +38,7 @@ class TopBarUI(parentNode: VBox) extends MenuBar:
               contentText = "New name for the current board:"
         }
             val result = dialog.showAndWait()
-            App.currentBoard.changeName(result.getOrElse(App.currentBoard.name))
+            App.currentBoardOption.get.changeName(result.getOrElse(App.currentBoardOption.get.name))
             App.start()
     }
 
@@ -54,7 +54,7 @@ class TopBarUI(parentNode: VBox) extends MenuBar:
           if result.isDefined then
             var newBoard = KanbanApp.addBoard(result.getOrElse("New Board"))
             addBoardUI(newBoard)
-            App.currentBoard = newBoard
+            App.currentBoardOption = Some(newBoard)
             App.start()
         }
 
@@ -84,27 +84,28 @@ class TopBarUI(parentNode: VBox) extends MenuBar:
               var chosenBoard = KanbanApp.allBoards.filter(_.name == chosenBoardName).head
               KanbanApp.deleteBoard(chosenBoard)
               if KanbanApp.allBoards.nonEmpty then
-                App.currentBoard = KanbanApp.allBoards.head
+                App.currentBoardOption = KanbanApp.allBoards.headOption
               App.start()
         }
-      items = List(nameChange, addBoard, deleteBoard)
+
+      //Button to save current status of the application
+      val saving = new MenuItem("Save"):
+        onAction = (event) => {
+          App.folder.listFiles().foreach(_.delete())
+          for board <- KanbanApp.allBoards do 
+            KanbanApp.exportBoard(board)
+        }
+      items = List(nameChange, addBoard, deleteBoard, saving)
     }
 
     //Menu 2 - Boards. There is a menu item for each board of KanbanApp
     val boards = new Menu("Boards")
 
-    //Menu 3 - File Management. There are two menu items, one for import and one for export
-    val fileManagement = new Menu("File Management") {
-      val importing = new MenuItem("Import")
-      val exporting = new MenuItem("Export")
-      items = List(importing, exporting)
-      }
-
     //Function to add boards to the menu bar button
     def addBoardUI(board: Board) = {
       boards.items += new BoardItem(board):
         onAction = (event) => {
-          App.currentBoard = KanbanApp.allBoards.filter(_.identifier == board.identifier).head
+          App.currentBoardOption = KanbanApp.allBoards.filter(_.identifier == board.identifier).headOption
           App.start()
         }
     }
@@ -113,10 +114,10 @@ class TopBarUI(parentNode: VBox) extends MenuBar:
       boards.items.clear()
       for i <- KanbanApp.allBoards do boards.items += new BoardItem(i):
         onAction = (event) => {
-          App.currentBoard = KanbanApp.allBoards.filter(_.identifier == i.identifier).head
+          App.currentBoardOption = KanbanApp.allBoards.filter(_.identifier == i.identifier).headOption
           App.start()
         }
 
 
-      this.menus = List(setting, boards, fileManagement)
+      this.menus = List(setting, boards)
 

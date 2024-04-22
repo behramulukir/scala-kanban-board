@@ -7,7 +7,8 @@ import scala.collection.mutable._
 class Board(boardName: String) {
   //Creating a random identifier for each board
   private val random = scala.util.Random
-  val identifier: String = "1/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString // How to assign each item a unique identifier was described detailedly in the technical plan.
+  var identifier: String = "1/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString // How to assign each item a unique identifier was described detailedly in the technical plan.
+  
   //Name of the board
   var name: String = boardName
   
