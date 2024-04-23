@@ -1,26 +1,19 @@
 package gui
 
 import backend.*
-import javafx.scene.control.ScrollPane.ScrollBarPolicy
 
 import scala.collection.mutable.*
-import scalafx.application.JFXApp3
-import scalafx.scene.Scene
-import scalafx.scene.layout.{AnchorPane, BorderPane, HBox, Pane, VBox}
-import scalafx.geometry.Pos
-import scalafx.scene.control.ScrollPane.ScrollBarPolicy.Always
-import scalafx.scene.control.{Menu, MenuBar, MenuButton, MenuItem, ScrollPane, TitledPane}
-import scalafx.scene.paint.*
-
+import scalafx.scene.layout.HBox
+import scalafx.scene.control.{MenuItem, ScrollPane, TitledPane}
 import scala.collection.mutable
 import scala.language.implicitConversions
 
 class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
 
   //Defining the title of titled pane
-  this.text = board.name
   var currentParentPane = parentPane
   var currentBoard = board
+  this.text = currentBoard.name
 
   //List of stage uis
   var stageUIList = ListBuffer[StageUI]()
@@ -34,7 +27,6 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
 
   //Creating ScrollPane
   var boardScroll = new ScrollPane()
-  //boardScroll.pannable = true
 
   //Creating BoardHBox
   var boardHBox = new HBox()
@@ -46,8 +38,7 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
   //Setting Board Pane as the content of titled pane
   this.setContent(boardScroll)
 
-  //Adding StageUI to BoardHBox
-  
+  //Function to add StageUI to BoardHBox
   def addStageUI(stage: Stage) = {
     stageUIList += new StageUI(this, board, stage)
     boardHBox.children = stageUIList
@@ -67,17 +58,16 @@ class BoardUI(parentPane: KanbanUI, board: Board) extends TitledPane{
     boardHBox.children = stageUIList
   }
   
+  //Removing tags from the tag menu if they are deleted
   def removeTagUI(string: String) = {
     parentPane.removeTagMenu(string)
   }
-
-
 }
 
+//Helper class that is used while listing the boards in the top bar as menu items
 class BoardItem(board: Board) extends MenuItem(board.name) {
   var currboard = board
   var description = board.name
   var identifier = board.identifier
-
 }
 

@@ -1,55 +1,54 @@
 package gui
 
 import backend.*
+import javafx.beans.value.{ChangeListener, ObservableValue}
 
 import scala.collection.mutable.*
-import scalafx.application.JFXApp3
-import scalafx.event.ActionEvent
-import scalafx.scene.Scene
-import scalafx.scene.layout.{AnchorPane, Border, BorderPane, BorderStroke, BorderStrokeStyle, BorderWidths, CornerRadii, HBox, Pane, StackPane, VBox}
+import scalafx.scene.layout.{Border, BorderStroke, BorderStrokeStyle, BorderWidths, CornerRadii, HBox, StackPane, VBox}
 import scalafx.geometry.Pos
 import scalafx.geometry.Pos.Center
-import scalafx.scene.control.{Button, ButtonBar, Menu, MenuBar, MenuButton, MenuItem, TextField, TitledPane}
-import scalafx.scene.input.{DragEvent, TransferMode}
+import scalafx.scene.control.{Button, TextField}
+import scalafx.scene.input.TransferMode
 import scalafx.scene.paint.*
-import scalafx.Includes.{jfxMouseEvent2sfx, jfxDragEvent2sfx}
-
 import scala.collection.mutable
 import scala.language.implicitConversions
 
 class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
+  //Defining current stage and parent pane
   var currentStage = stage
   val currentParentPane = parentPane
 
+  //Defining the dimensions and spacing between elements
   this.prefHeight <== parentPane.height
   this.prefWidth = 200
-
   this.setSpacing(6)
 
-  //Stage name
+  //Container for stage/list name
   val stageText = new StackPane()
   stageText.minHeight = 30
   stageText.maxHeight = 30
   stageText.prefWidth <== this.width
 
+  //Interactive text field to change name of stages/lists
   val stageNameUI = new TextField():
     text = stage.name
     prefHeight <== stageText.height
     prefWidth <== stageText.width
-    onAction = (event) => {
-      var newStageName = this.getText
-      stage.changeName(newStageName)
-    }
+  stageNameUI.textProperty().addListener(new ChangeListener[String]:
+    override def changed(observableValue: ObservableValue[_ <: String], t: String, t1: String): Unit =
+      stage.changeName(t1)
+   )
   stageText.children += stageNameUI
   stageText.setAlignment(Pos.Center)
 
-  //Remove list and add card buttons
+  //Remove list and add card button container
   val stageControl = new HBox()
   stageControl.minHeight = 30
   stageControl.maxHeight = 30
   stageControl.prefWidth <== this.width
 
+  //Button to add cards to list/stage
   val addCardButton = new Button("Add Card"):
     prefHeight <== stageControl.height
     prefWidth <== stageControl.width * 0.5
@@ -58,6 +57,7 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
       addCardUI(card)
     }
 
+  //Button to remove stage/list from the board
   val removeStage = new Button("Remove List"):
     prefHeight <== stageControl.height
     prefWidth <== stageControl.width * 0.5
@@ -69,16 +69,17 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
   stageControl.children += addCardButton
 
 
+  //Adding stage/list control elements to the stage
   this.children += stageText
   this.children += stageControl
   
-  //CardPane list
+  //List of CardUIs and CardPanes
   var cardUIList = Buffer[CardUI]()
   var cardPaneList = Buffer[CardPane]()
 
-  //Function for adding CardUIs to the box
+  //Function for adding CardUIs to the current list
   def addCardUI(card: Card) = {
-    if currentParentPane.cardUIList.filter(_.currentCard == card).nonEmpty then
+    if currentParentPane.cardUIList.exists(_.currentCard == card) then
       this.children += currentParentPane.cardUIList.filter(_.currentCard == card).head.currentCardPane.get
     else
       var cardui = new CardUI(this, card)
@@ -89,21 +90,21 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
       this.children += cardpane
   }
 
-  //Adding cards in stage initially
+  //Adding cards to the stage when the application is launched
   for i <- stage.allCards do {
     if !i.archiveStatus then {
       this.addCardUI(i)
     }
   }
 
-  //Archive card from view
+  //Function for archiving carduis from view
   def archiveCardUI(cardui: CardUI): Unit = {
     currentStage.currentBoard.archiveCard(cardui.currentCard)
     this.children.remove(this.children.indexOf(cardui.currentCardPane.get))
     parentPane.currentParentPane.addToArchiveMenu(cardui)
   }
 
-  //Delete a card from view
+  //Deleting a cardui from view
   def removeCardUI(cardui: CardUI): Unit = {
     cardUIList.remove(cardUIList.indexOf(cardui))
     this.currentStage.removeCard(cardui.currentCard)
@@ -119,7 +120,7 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
   }
 
   //Removing tag filter from the view
-  def removeFiltering = {
+  def removeFiltering() = {
     for cardui <- filteredCardUI do
       this.children.add(cardui.currentCardPane.get)
     filteredCardUI.clear()
@@ -142,7 +143,7 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
 
   //When a card is dragged over a stage
   this.onDragOver = (event) => {
-    if event.getGestureSource() != this && event.getDragboard().hasString() then
+    if event.getGestureSource != this && event.getDragboard.hasString then
       event.acceptTransferModes(TransferMode.Move)
     event.consume()
   }
@@ -150,7 +151,7 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
   //When a card is dropped on a stage
   this.onDragDropped = (event) =>  {
     var status = false
-    if event.getDragboard.hasString() then
+    if event.getDragboard.hasString then
       var cardid = event.getDragboard.getString
       for stageui <- currentParentPane.stageUIList do
         var carduiIndex = 0

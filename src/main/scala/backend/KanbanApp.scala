@@ -1,14 +1,10 @@
 package backend
 
 import play.api.libs.json
-import scalafx.scene.paint.*
-import scalafx.scene.paint.Color.rgb
-
 import scala.collection.mutable.*
 import scala.io.*
 import java.time.*
 import java.io.*
-import java.time.format.DateTimeFormatter
 import play.api.libs.json.*
 
 import java.nio.charset.StandardCharsets
@@ -41,7 +37,7 @@ object KanbanApp:
   //Play library (https://www.playframework.com/documentation/3.0.x/ScalaJson) was used for Json related functions
 
   //Function to export boards
-  def exportBoard(board: Board) = {
+  def exportBoard(board: Board): Unit =
 
     //Json writer for cards
     implicit val cardWrites: Writes[Card] = new Writes[Card] {
@@ -76,11 +72,29 @@ object KanbanApp:
     //Saving Json to external file
     val jsonString = Json.toJson(board)
     val dirName = s"./src/main/data/${board.name}"
+
+    //Writing the file if the folder exists
     Files.write(Paths.get(dirName), jsonString.toString.getBytes(StandardCharsets.UTF_8))
-  }
+
+    //IO exception handling - Does target file exist
+    val myFileWriterAfterCheck =
+      try FileReader(dirName)
+      catch
+        case e: FileNotFoundException =>
+          throw new FileNotFoundException("Target file doesn't exists")
+
+
+
 
   //Function to create boards based on the given Json files
-  def importBoard(string: String) = {
+  def importBoard(directory: String): Unit =
+
+    //I/O exception handling - Does source file exists
+    val myFileReader =
+      try FileReader(directory)
+      catch
+        case e: FileNotFoundException =>
+          throw new FileNotFoundException("Source file doesn't exists")
 
     // Case class to read Json
     case class CardCase(cardID: String, cardDescription: String, deadline: String, tags: List[String], archiveStatus: Boolean)
@@ -93,7 +107,8 @@ object KanbanApp:
     implicit val readBoard: Reads[BoardCase] = Json.reads[BoardCase]
 
     //Reading Json file and parsing it
-    val jsonRead = Source.fromFile(string).getLines.mkString
+    val jsonStream = Source.fromFile(directory)
+    val jsonRead = jsonStream.getLines.mkString
     val jsonString = Json.parse(jsonRead)
 
     //Creating board case class based on the Json
@@ -120,4 +135,6 @@ object KanbanApp:
         for tag <- card.tags do
           var chosenTag = newBoard.allTags.filter(_.name == tag).head
           newCard.addTag(chosenTag)
-  }
+      
+      
+      jsonStream.close()

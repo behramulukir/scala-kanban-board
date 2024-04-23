@@ -7,11 +7,7 @@ import scala.collection.mutable._
 import scala.util.Random
 
 class Card(board: Board, initialStage: Stage) {
-  
-  //Dimesions of the card, dependent on the window size
-  var width = 100
-  var height = 100
-  
+
   //At what stage/column the card is at
   var stage = initialStage
   
@@ -20,12 +16,6 @@ class Card(board: Board, initialStage: Stage) {
   
   //List of tags for the card
   var tags: Buffer[Tag] = Buffer()
-  
-  //List of possible interactions linked to the card
-  var interactionTypes: Buffer[Interaction] = Buffer()
-  
-  //List of attachments linked to the card 
-  var attachments: Buffer[Attachment] = Buffer()
   
   //Random ID value for the card
   private val random = scala.util.Random
@@ -40,22 +30,11 @@ class Card(board: Board, initialStage: Stage) {
   //Optional deadline for the card
   var deadline: Option[LocalDate] = None
   
-  //Color of the card, it is random in the beginning
+  //Color of the card, it is randomly selected
   var color = Random.shuffle(colors).head
   
   //Optional template for the card
   var template: Option[Image] = None
-  
-  //Optional checklist for the card
-  var checklist: Option[Checklist] = None
-  
-  //Distinguishing number of optional interaction attached to the card
-  var interactionKey: Option[Interaction] = None
-
-  //Progress of the checklist of the card
-  private var progress: Option[Double] = if (checklist.nonEmpty){
-    Some(checklist.get.uncompletedSteps.size / (checklist.get.uncompletedSteps.size + checklist.get.completedSteps.size))
-  }else None
 
   //Function for changing textual content
   def changeDescription(newDesc: String) ={
@@ -68,16 +47,7 @@ class Card(board: Board, initialStage: Stage) {
   }
 
   //Removing the deadline of the card
-  def removeDeadline = deadline = None
-
-  //Function for adding a checklist to the card
-  def addChecklist = {
-    val newChecklist = new Checklist
-    checklist = Some(newChecklist)
-  }
-
-  //Function for removing the checklist to the card
-  def removeChecklist = checklist = None
+  def removeDeadline() = deadline = None
 
   //Functino for changing the color of the card
   def changeColor(newColor: Color) = color = newColor
@@ -98,44 +68,7 @@ class Card(board: Board, initialStage: Stage) {
   def addTemplate(image: Image) = template = Some(image)
   
   //Function for removing the template from the card
-  def removeTemplate = template = None
-
-  //Function adding an attachment to the card
-  def addAttachment(attachment: Attachment) = attachments = attachments.addOne(attachment)
-
-  //Function for removing an attachment from the card
-  def removeAttachment(attachment: Attachment) = attachments.remove(attachments.indexOf(attachment))
-
-  //Function for checking progress in checklist
-  def calculateProgress(checklist: Checklist) = checklist.progress
-
-  //Function for adding an interaction to the card.
-  //Interaction types: 1 = Adding tag, 2 = Opening URL, 3 = Empyting the card
-  //NOT WORKING NOW
-  /*
-  def addInteraction(interactionType: Int, content: String) = {
-    if (interactionType == 0){
-      var tagIndex = -1
-      for (i <- this.board.allTags){
-        if (i.name == content) tagIndex = this.board.allTags.indexOf(i)
-      }
-      if (tagIndex == -1) {
-        tagCreation(content)
-        val tagInteraction = new AddTag(this.board.allTags.last, this)
-        interactionKey = Some(tagInteraction)
-      } else {
-        val tagInteraction = new AddTag(this.board.allTags(tagIndex), this)
-        interactionKey = Some(tagInteraction)
-      }
-    }else if (interactionType == 1){
-      val urlInteraction = new OpenHomeURL(content)
-      interactionKey = Some(urlInteraction)
-    } else if(interactionType == 2){
-      val emptyInteraction = new EmptyCard(this)
-      interactionKey = Some(emptyInteraction)
-    }
-  }
-   */
+  def removeTemplate() = template = None
 
   //Function for changing the stage/column of the card
   def changeStage(newStage: Stage) = stage = newStage

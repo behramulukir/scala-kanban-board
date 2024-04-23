@@ -3,32 +3,28 @@ package backend
 import java.time.LocalDate
 import scala.collection.mutable._
 
-//In my implementation, stage means columns at the kanban board
+//In my implementation, stage means columns/lists at the kanban board
 class Stage(board: Board) {
   
   //Unique identifier for stage
   private val random = scala.util.Random
   var identifier: String = "2/" + LocalDate.now.toString + "/" + random.nextInt(100000).toString
   
-  //List of all cards in the stage
+  //List of all cards in the stage/list
   var allCards: Buffer[Card] = Buffer()
   
-  //Board of stage
+  //Board of stage/list
   var currentBoard = board
-
-  //Dimensions of a stage, they are dependent on the window size
-  var width = 100
-  var height = 100
   
-  //Description of the stage
+  //Description of the stage/list
   var name = "List name"
   
-  //Changing the stage name
+  //Changing the stage/list name
   def changeName(newName: String) = {
     name = newName
   }
   
-  //Adding a card to this stage
+  //Adding a card to this stage/list
   def addCard = {
     val card = new Card(this.board, this)
     allCards = allCards.addOne(card)
