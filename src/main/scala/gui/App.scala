@@ -23,10 +23,10 @@ object App extends JFXApp3:
   val dirName = "./src/main/data"
   val folder = new File(dirName)
 
-  //IO exception handling - Does target folder exist
-  val myFileWriterAfterCheck =
+  //IO exception handling - Does target/source folder exist
+  val folderCheck =
     if !folder.exists() then
-      throw new FileNotFoundException("Target folder not found")
+      throw new FileNotFoundException("Target/Source folder not found")
 
 
   //Big container for the GUI

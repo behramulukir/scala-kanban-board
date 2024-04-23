@@ -94,7 +94,10 @@ class CardUI(parentNode: StageUI, card: Card) extends FlowPane{
       card.changeDeadline(newDeadline.get)
       var deadline = card.deadline.get
       var daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), deadline)
-      deadlineText = new Text(daysLeft.toString + " days left")
+      if daysLeft >= 0 then
+        deadlineText = new Text(daysLeft.toString + " days left")
+      else
+        deadlineText = new Text((daysLeft * -1).toString + " days ago")
     else
       card.deadline = None
       deadlineText = new Text("No deadline")
@@ -255,7 +258,7 @@ class CardPane(cardUI: CardUI) extends StackPane{
   cardUI.currentCardPane = Some(this)
   this.children = cardUI
   this.setAlignment(Center)
-  
+
   //Adding border to make it easier to distinguish
   //Color of border depends on randomly picked color of the card
   this.setBorder(new Border(new BorderStroke(cardUI.currentCard.color, BorderStrokeStyle.Solid, CornerRadii(2), BorderWidths(3))))

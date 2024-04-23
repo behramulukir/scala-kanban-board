@@ -1,6 +1,8 @@
 package backend
 
+import gui.App.folder
 import play.api.libs.json
+
 import scala.collection.mutable.*
 import scala.io.*
 import java.time.*
@@ -71,14 +73,14 @@ object KanbanApp:
 
     //Saving Json to external file
     val jsonString = Json.toJson(board)
-    val dirName = s"./src/main/data/${board.name}"
+    val targetDir = s"./src/main/data/${board.name}"
 
     //Writing the file if the folder exists
-    Files.write(Paths.get(dirName), jsonString.toString.getBytes(StandardCharsets.UTF_8))
+    Files.write(Paths.get(targetDir), jsonString.toString.getBytes(StandardCharsets.UTF_8))
 
     //IO exception handling - Does target file exist
     val myFileWriterAfterCheck =
-      try FileReader(dirName)
+      try FileReader(targetDir)
       catch
         case e: FileNotFoundException =>
           throw new FileNotFoundException("Target file doesn't exists")
