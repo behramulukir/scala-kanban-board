@@ -15,6 +15,9 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
   //Defining the current board
   var currentBoard = boardui.currentBoard
 
+  //Variable to store if filtering is on
+  var filterOption: Option[Tag] = None
+
   //Defining the preffered dimensions
   this.prefHeight <== parentPane.height
   this.prefWidth <== parentPane.width * 0.15
@@ -28,12 +31,19 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
       archiveElement.onAction = (event) => {
         var selectedCards = boardui.currentBoard.archivedCards.filter(_.identifier == archiveElement.identifier)
         var deArchiveCard = selectedCards.head
-        boardui.currentBoard.dearchiveCard(deArchiveCard)
-        var stageToReturn = deArchiveCard.stage.identifier
-        var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
-        var stageUIToReturn = stageUIList.head
-        stageUIToReturn.addCardUI(deArchiveCard)
-        deArchiveCardButton(deArchiveCard)
+        if filterOption.isDefined && !deArchiveCard.tags.contains(filterOption.get) then
+          boardui.currentBoard.dearchiveCard(deArchiveCard)
+          var stageToReturn = deArchiveCard.stage.identifier
+          var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
+          var stageUIToReturn = stageUIList.head
+          deArchiveCardButton(deArchiveCard)
+        else
+          boardui.currentBoard.dearchiveCard(deArchiveCard)
+          var stageToReturn = deArchiveCard.stage.identifier
+          var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
+          var stageUIToReturn = stageUIList.head
+          stageUIToReturn.addCardUI(deArchiveCard)
+          deArchiveCardButton(deArchiveCard)
       }
       archiveList += archiveElement
     items = archiveList.toList
@@ -49,6 +59,7 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
   val tagsButton = new MenuButton("Tags"):
     tagsList += new MenuItem("No filtering"):
       onAction = (event) => {
+        filterOption = None
         for stageui <- boardui.stageUIList do
           stageui.removeFiltering()
       }
@@ -57,6 +68,7 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
     for i <- currentBoard.allTags do tagsList += new MenuItem(i.name):
       onAction = (event) => {
         var filterTag = currentBoard.allTags.filter(_.name == i.name).head
+        filterOption = Some(filterTag)
         var showCards = currentBoard.filter(filterTag)
         for stageui <- boardui.stageUIList do
           stageui.removeFiltering()
@@ -102,6 +114,7 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
           tagsList += new MenuItem(result.get):
             onAction = (event) => {
               var filterTag = currentBoard.allTags.filter(_.name == this.getText).head
+              filterOption = Some(filterTag)
               var showCards = currentBoard.filter(filterTag)
               for stageui <- boardui.stageUIList do
                 stageui.removeFiltering()
@@ -138,6 +151,7 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
           var chosenTag = currentBoard.allTags.filter(_.name == chosenTagName).head
           currentBoard.removeTag(chosenTag)
           removeTagButton(chosenTagName)
+          filterOption = None
           for stageui <- boardui.stageUIList do
             stageui.removeFiltering()
             for cardui <- stageui.cardUIList do
@@ -164,12 +178,19 @@ class MenuBarUI(parentPane: KanbanUI, boardui: BoardUI) extends VBox{
       archiveElement.onAction = (event) => {
         var selectedCards = boardui.currentBoard.archivedCards.filter(_.identifier == archiveElement.identifier)
         var deArchiveCard = selectedCards.head
-        boardui.currentBoard.dearchiveCard(deArchiveCard)
-        var stageToReturn = deArchiveCard.stage.identifier
-        var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
-        var stageUIToReturn = stageUIList.head
-        stageUIToReturn.addCardUI(deArchiveCard)
-        deArchiveCardButton(deArchiveCard)
+        if filterOption.isDefined && !deArchiveCard.tags.contains(filterOption.get) then
+          boardui.currentBoard.dearchiveCard(deArchiveCard)
+          var stageToReturn = deArchiveCard.stage.identifier
+          var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
+          var stageUIToReturn = stageUIList.head
+          deArchiveCardButton(deArchiveCard)
+        else
+          boardui.currentBoard.dearchiveCard(deArchiveCard)
+          var stageToReturn = deArchiveCard.stage.identifier
+          var stageUIList = boardui.stageUIList.filter(_.currentStage.identifier == deArchiveCard.stage.identifier)
+          var stageUIToReturn = stageUIList.head
+          stageUIToReturn.addCardUI(deArchiveCard)
+          deArchiveCardButton(deArchiveCard)
       }
       archiveList += archiveElement
     archiveButton.items = archiveList.toList

@@ -19,6 +19,9 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
   var currentStage = stage
   val currentParentPane = parentPane
 
+  //Variable to see if there is tag filtering on
+  var tagFilter: Option[Tag] = None
+
   //Defining the dimensions and spacing between elements
   this.prefHeight <== parentPane.height
   this.prefWidth = 200
@@ -114,15 +117,19 @@ class StageUI(parentPane: BoardUI, board: Board, stage: Stage) extends VBox{
   //Filtering cards based on tag
   var filteredCardUI = Buffer[CardUI]()
   def filterCardUI(tag: Tag) = {
+    tagFilter = Some(tag)
     filteredCardUI = cardUIList.filterNot(_.currentCard.tags.contains(tag))
     for element <- filteredCardUI do
-      this.children.remove(this.children.indexOf(element.currentCardPane.get))
+      if !element.currentCard.archiveStatus then
+          this.children.remove(this.children.indexOf(element.currentCardPane.get))
   }
 
   //Removing tag filter from the view
   def removeFiltering() = {
+    tagFilter = None
     for cardui <- filteredCardUI do
-      this.children.add(cardui.currentCardPane.get)
+      if !cardui.currentCard.archiveStatus then
+        this.children.add(cardui.currentCardPane.get)
     filteredCardUI.clear()
   }
 

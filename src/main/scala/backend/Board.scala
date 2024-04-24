@@ -1,6 +1,5 @@
 package backend
 
-import scalafx.scene.image.*
 import java.time._
 import scala.collection.mutable._
 
@@ -19,9 +18,6 @@ class Board(boardName: String) {
   var allTags: Buffer[Tag] = Buffer()
   var archivedCards: Buffer[Card] = Buffer()
   var showableCards: Buffer[Card] = Buffer()
-  
-  //Background feature for board
-  var background: Option[Image] = None
   
   //Adding a new card
   def addCard(card: Card) =
@@ -71,11 +67,6 @@ class Board(boardName: String) {
 
   //Change name of the board
   def changeName(newName: String) = name = newName
-
-  //Change background of the board with given image
-  def changeBackground(image: Image) =
-    background = Some(image)
-  end changeBackground
 
   //Function that is actually used while adding a tag to the card. 
   //It checks if that tag exists, if not it creates the tag.

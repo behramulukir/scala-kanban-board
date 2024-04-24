@@ -292,4 +292,5 @@ class CardPane(cardUI: CardUI) extends StackPane{
 class ArchivedCard(card: Card) extends MenuItem(card.description) {
   var description = card.description
   var identifier = card.identifier
+  var currentCard = card
 }

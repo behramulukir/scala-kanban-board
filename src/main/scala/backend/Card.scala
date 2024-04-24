@@ -32,9 +32,6 @@ class Card(board: Board, initialStage: Stage) {
   
   //Color of the card, it is randomly selected
   var color = Random.shuffle(colors).head
-  
-  //Optional template for the card
-  var template: Option[Image] = None
 
   //Function for changing textual content
   def changeDescription(newDesc: String) ={
@@ -63,12 +60,6 @@ class Card(board: Board, initialStage: Stage) {
     tags.remove(tags.indexOf(tag))
     tag.removeCard(this)
   }
-
-  //Function for adding a template to the card
-  def addTemplate(image: Image) = template = Some(image)
-  
-  //Function for removing the template from the card
-  def removeTemplate() = template = None
 
   //Function for changing the stage/column of the card
   def changeStage(newStage: Stage) = stage = newStage

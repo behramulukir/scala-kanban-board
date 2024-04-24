@@ -5,7 +5,6 @@ import backend.*
 import scalafx.scene.layout.VBox
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.{Alert, ChoiceDialog, Menu, MenuBar, MenuItem, TextInputDialog}
-
 import scala.language.implicitConversions
 
 //Top menu bar for some settings such as changing to other boards, import, and export
