@@ -17,10 +17,10 @@ The picture above is a screenshot of the GUI in an example use case. There are t
 Below, you can see screenshots of GUI in some example use cases.
 
 <p float="left">
-  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/New%20Tag.png" width="500" />
-  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Add%20Tag.png" width="500" /> <br>
-  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Deadline.png" width="500" />
-  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Quit.png" width="500" />
+  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/New%20Tag.png" width="" />
+  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Add%20Tag.png" width="" /> <br>
+  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Deadline.png" width="" />
+  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Quit.png" width="" />
 </p>
 
 ## Using the application
@@ -32,6 +32,6 @@ The application can be run by running the “App.scala” file under the “GUI�
 Below, you can see the UML diagram of the application and JSON structure used in this project to save/retrieve information in external files.
 
 <p float="left">
-  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Final_UML.png" width="500" />
-  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/JSON%20Structure.png" width="500" />
+  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/Final_UML.png" width="" />
+  <img src="https://github.com/behramulukir/scala-kanban-board/blob/main/documents/JSON%20Structure.png" width="" />
 </p>
